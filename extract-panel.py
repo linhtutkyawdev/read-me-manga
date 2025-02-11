@@ -1,7 +1,6 @@
 import pymupdf
 import os
-from image_processing.panel import extract_panels_for_images_in_folder
-
+from image_processing.panel import extract_panels_custom
 
 images_dir = "extracted-images"
 panels_dir = "extracted-panels"
@@ -29,10 +28,10 @@ for page_index in range(len(doc)): # iterate over pdf pages
         if pix.n - pix.alpha > 3: # CMYK: convert to RGB first
             pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
         
-        output_path = os.path.join("extracted-images", f"p_{page_index+1}-i_{image_index+1}.png")
+        output_path = os.path.join("extracted-images", f"{page_index+1}_{image_index+1}.png")
 
         pix.save(output_path) # save the image as png
         pix = None
     
 # Extract panels from the saved image
-extract_panels_for_images_in_folder(images_dir, panels_dir)
+extract_panels_custom(images_dir, panels_dir)

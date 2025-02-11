@@ -462,3 +462,28 @@ def extract_panels_for_images_in_folder_by_ai(
         num_panels += len(panel_blocks)
     return (num_files, num_panels)
 
+def extract_panels_custom(
+        input_dir: str, 
+        output_dir: str, 
+        fallback: bool = True, 
+        split_joint_panels: bool = False,
+        mode: str = OutputMode.BOUNDING,
+        merge: str = MergeMode.NONE
+        ) -> tuple[int, int]:
+    """
+    Basically the main function of the program,
+    this is written with cli usage in mind
+    """
+    if not os.path.exists(output_dir):
+        return (0, 0)
+    files = os.listdir(input_dir)
+    num_files = len(files)
+    num_panels = 0
+    for _, image in enumerate(tqdm(load_images(input_dir), total=num_files)):
+        image_name, image_ext = os.path.splitext(image.image_name)
+        panel_blocks = generate_panel_blocks(image.image, fallback=fallback, split_joint_panels=split_joint_panels, mode=mode, merge=merge)
+        for j, panel in enumerate(panel_blocks):
+            out_path = os.path.join(output_dir, f"{image_name}_{j}{image_ext}")
+            cv2.imwrite(out_path, panel)
+        num_panels += len(panel_blocks)
+    return (num_files, num_panels)
